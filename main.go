@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"net/http"
 	"os"
 	"sync"
@@ -18,13 +19,20 @@ func main() {
 	log.SetFormatter(&log.TextFormatter{})
 	log.SetOutput(os.Stdout)
 
-	go startVueServer()
+	devPtr := flag.Bool("dev", false, "a bool")
+	flag.Parse()
+
+	if *devPtr {
+		prepareProdServer()
+	} else {
+		go startVueServer(":80")
+	}
 	wg.Add(1)
 
 	wg.Wait()
 }
 
-func startVueServer() {
+func startVueServer(port string) {
 	defer wg.Done()
 
 	router := mux.NewRouter().StrictSlash(true)
@@ -37,12 +45,13 @@ func startVueServer() {
 
 	srv := &http.Server{
 		Handler:      handlers.LoggingHandler(logwriter, router),
-		Addr:         "127.0.0.1:80",
+		Addr:         port,
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
 	log.Fatal(srv.ListenAndServe())
 }
+
 func indexHandler(filename string) func(response http.ResponseWriter, request *http.Request) {
 	realHandler := func(response http.ResponseWriter, request *http.Request) {
 		http.ServeFile(response, request, filename)
