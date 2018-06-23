@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/gorilla/handlers"
@@ -11,37 +12,40 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var wg sync.WaitGroup
+
 func main() {
-	// pwd, err := os.Getwd()
-	// if err != nil {
-	// 	log.Fatalf("Could not determine working directory")
-	// }
+	log.SetFormatter(&log.TextFormatter{})
+	log.SetOutput(os.Stdout)
+
+	go startVueServer()
+	wg.Add(1)
+
+	wg.Wait()
+}
+
+func startVueServer() {
+	defer wg.Done()
 
 	router := mux.NewRouter().StrictSlash(true)
 	router.PathPrefix("/static").Handler(http.FileServer(http.Dir("VueApp/dist")))
 	router.PathPrefix("/").HandlerFunc(indexHandler("VueApp/dist/index.html"))
 
+	logger := log.New()
+	logwriter := logger.Writer()
+	defer logwriter.Close()
+
 	srv := &http.Server{
-		Handler:      handlers.LoggingHandler(os.Stdout, router),
-		Addr:         ":80",
+		Handler:      handlers.LoggingHandler(logwriter, router),
+		Addr:         "127.0.0.1:80",
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
 	log.Fatal(srv.ListenAndServe())
 }
-
 func indexHandler(filename string) func(response http.ResponseWriter, request *http.Request) {
-	routerLogger()
 	realHandler := func(response http.ResponseWriter, request *http.Request) {
 		http.ServeFile(response, request, filename)
 	}
 	return realHandler
-
-}
-
-func routerLogger() func(response http.ResponseWriter, request *http.Request) *http.Response {
-	return func(response http.ResponseWriter, request *http.Request) *http.Response {
-		log.Infof("%s \"%s %s %s\"", request.RemoteAddr, request.Method, request.RequestURI, request.Proto)
-		return nil
-	}
 }
