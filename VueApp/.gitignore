@@ -13,3 +13,9 @@ yarn-error.log*
 *.ntvs*
 *.njsproj
 *.sln
+
+# Go build files
+*.exe
+
+# NPM
+/VueApp/package-lock.json

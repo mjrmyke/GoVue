@@ -1,7 +1,8 @@
-package main
+package VueApp
 
 import (
 	"flag"
+	"fmt"
 	"net/http"
 	"os"
 	"sync"
@@ -22,10 +23,12 @@ func main() {
 	devPtr := flag.Bool("dev", false, "a bool")
 	flag.Parse()
 
-	if *devPtr {
-		prepareProdServer()
-	} else {
+	if !*devPtr {
+		fmt.Println("Starting Server, serving on :80")
 		go startVueServer(":80")
+	} else {
+		fmt.Println("Starting Dev Server, serving on localhost:80")
+		go startVueServer("localhost:80")
 	}
 	wg.Add(1)
 
