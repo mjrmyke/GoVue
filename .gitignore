@@ -9,6 +9,8 @@
 
 # Go build files
 *.exe
+GoVueApp
 
 # NPM
 package-lock.json
+
