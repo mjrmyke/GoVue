@@ -1,4 +1,4 @@
-package VueApp
+package main
 
 import (
 	"flag"
