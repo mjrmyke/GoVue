@@ -1,5 +1,4 @@
 PROJECT = "GoVue Server"
-current_dir = $(shell pwd)
 
 prod:
 	cd VueApp && npm install

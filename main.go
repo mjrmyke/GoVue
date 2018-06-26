@@ -10,6 +10,7 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/olahol/melody"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -39,8 +40,10 @@ func startVueServer(port string) {
 	defer wg.Done()
 
 	router := mux.NewRouter().StrictSlash(true)
+
 	router.PathPrefix("/static").Handler(http.FileServer(http.Dir("VueApp/dist")))
 	router.PathPrefix("/").HandlerFunc(indexHandler("VueApp/dist/index.html"))
+	router.HandleFunc("/ws/{room}", startWebSocketConnection)
 
 	logger := log.New()
 	logwriter := logger.Writer()
@@ -53,6 +56,16 @@ func startVueServer(port string) {
 		ReadTimeout:  15 * time.Second,
 	}
 	log.Fatal(srv.ListenAndServe())
+}
+
+func startWebSocketConnection(response http.ResponseWriter, request *http.Request) {
+	webSocketManager := melody.New()
+	webSocketManager.HandleRequest(response, request)
+
+	webSocketManager.HandleMessage(func(sess *melody.Session, msg []byte) {
+		webSocketManager.Broadcast(msg)
+	})
+
 }
 
 func indexHandler(filename string) func(response http.ResponseWriter, request *http.Request) {
