@@ -41,9 +41,15 @@ func startVueServer(port string) {
 
 	router := mux.NewRouter().StrictSlash(true)
 
+	apiRouter := router.PathPrefix("/api/").Subrouter()
+	wsRouter := router.PathPrefix("/ws/").Subrouter()
+
+	wsRouter.HandleFunc("/{room}", startWebSocketConnection)
+
+	apiRouter.HandleFunc("/user/create", createNewUser)
+
 	router.PathPrefix("/static").Handler(http.FileServer(http.Dir("VueApp/dist")))
 	router.PathPrefix("/").HandlerFunc(indexHandler("VueApp/dist/index.html"))
-	router.HandleFunc("/ws/{room}", startWebSocketConnection)
 
 	logger := log.New()
 	logwriter := logger.Writer()
@@ -56,6 +62,10 @@ func startVueServer(port string) {
 		ReadTimeout:  15 * time.Second,
 	}
 	log.Fatal(srv.ListenAndServe())
+}
+
+func createNewUser(response http.ResponseWriter, request *http.Request) {
+
 }
 
 func startWebSocketConnection(response http.ResponseWriter, request *http.Request) {
