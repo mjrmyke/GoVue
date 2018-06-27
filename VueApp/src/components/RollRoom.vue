@@ -1,13 +1,15 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-    <h2>Essential Links</h2>
+    <h1>{{ roomid }}</h1>
+    <h2>Hiya</h2>
     <ul>
       <li>
         <a
-          href="/#/roll/testroomid"
+          href="https://vuejs.org"
+          target="_blank"
         >
-          Roll Room
+          Core Docs
         </a>
       </li>
       <li>
@@ -79,18 +81,34 @@
         </a>
       </li>
     </ul>
+    <ul id="messages"></ul>
+    <form action="">
+      <input id="m" autocomplete="off" /><button>Send</button>
+    </form>
   </div>
 </template>
 
 <script>
+
+
 export default {
-  name: 'HelloWorld',
+  name: 'RollRoom',
   data() {
     return {
-      msg: 'Welcome to Your Vue.js App',
+      msg: 'Roll Room Test',
+      ws: null
     };
   },
+  created() {
+      this.ws = new WebSocket("ws://" + window.location.host +'/ws'+ window.location.hash.split('#').join(''))
+  },
+  methods () {
+
+  },
+
 };
+
+
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
