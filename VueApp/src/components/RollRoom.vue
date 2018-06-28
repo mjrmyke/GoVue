@@ -1,90 +1,21 @@
 <template>
   <div class="hello">
     <h1> ok</h1>
-    <h1>{{ roomid }}</h1>
-    <h2>Hiya</h2>
-    <ul>
-      <li>
-        <a
-          href="https://vuejs.org"
-          target="_blank"
-        >
-          Core Docs
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://forum.vuejs.org"
-          target="_blank"
-        >
-          Forum
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://chat.vuejs.org"
-          target="_blank"
-        >
-          Community Chat
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://twitter.com/vuejs"
-          target="_blank"
-        >
-          Twitter
-        </a>
-      </li>
-      <br>
-      <li>
-        <a
-          href="http://vuejs-templates.github.io/webpack/"
-          target="_blank"
-        >
-          Docs for This Template
-        </a>
-      </li>
-    </ul>
-    <h2>Ecosystem</h2>
-    <ul>
-      <li>
-        <a
-          href="http://router.vuejs.org/"
-          target="_blank"
-        >
-          vue-router
-        </a>
-      </li>
-      <li>
-        <a
-          href="http://vuex.vuejs.org/"
-          target="_blank"
-        >
-          vuex
-        </a>
-      </li>
-      <li>
-        <a
-          href="http://vue-loader.vuejs.org/"
-          target="_blank"
-        >
-          vue-loader
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/awesome-vue"
-          target="_blank"
-        >
-          awesome-vue
-        </a>
-      </li>
-    </ul>
+    <h1>{{ title }}</h1>
+
     <ul id="messages"></ul>
   <input type="text" v-model="message"/>
   <button @click="emitEvent">emit</button>
-  <div><span>Response is:</span>{{response}}</div>
+  <div>
+    
+    <ul>
+        <li v-for="item in responses">
+          {{ item.message }}
+        </li>
+    </ul>
+  
+  
+  </div>
   </div>
 </template>
 
@@ -96,7 +27,7 @@ export default {
   name: 'RollRoom',
   data() {
     return {
-      msg: 'Roll Room Test',
+      title: 'Roll Room Test',
       ws: null
     };
   },
@@ -110,7 +41,7 @@ export default {
       
       this.ws.onmessage = event => {
         console.log("received message: " + event.data);
-        this.response.push(event.data);
+        this.responses.push({from: '', message: event.data});
       }
   },
   methods: {
@@ -123,8 +54,14 @@ export default {
   data: function() {
     return {
       message : '',
+      title: 'Roll Room',
       roomid: this.windowlocation,
-      response: [],
+      responses:[ {
+        from: '',
+        message: ''
+      }]
+
+        ,
 
     }
   }
@@ -143,7 +80,7 @@ ul {
   padding: 0;
 }
 li {
-  display: inline-block;
+  display: block;
   margin: 0 10px;
 }
 a {
