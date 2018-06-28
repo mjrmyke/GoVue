@@ -5,6 +5,7 @@ import RollRoom from '@/components/RollRoom';
 
 
 Vue.use(Router);
+window.Vue = Vue;
 
 export default new Router({
   routes: [

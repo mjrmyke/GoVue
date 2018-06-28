@@ -16,6 +16,8 @@ import (
 )
 
 var wg sync.WaitGroup
+var sg sync.WaitGroup
+var webSocketManager *melody.Melody
 
 func main() {
 	log.SetFormatter(&log.TextFormatter{})
@@ -31,9 +33,11 @@ func main() {
 		fmt.Println("Starting Dev Server, serving on localhost:80")
 		go startVueServer("localhost:80")
 	}
-	wg.Add(1)
+
+	wg.Add(2)
 
 	wg.Wait()
+
 }
 
 func startVueServer(port string) {
@@ -42,9 +46,19 @@ func startVueServer(port string) {
 	router := mux.NewRouter().StrictSlash(true)
 
 	apiRouter := router.PathPrefix("/api/").Subrouter()
-	wsRouter := router.PathPrefix("/ws/").Subrouter()
+	webSocketManager = melody.New()
 
-	wsRouter.HandleFunc("/{room}", startWebSocketConnection)
+	router.HandleFunc("/ws/roll/{room}", startWebSocketConnection)
+
+	webSocketManager.HandleMessage(func(sess *melody.Session, msg []byte) {
+		fmt.Println("websock message received: ", msg)
+		webSocketManager.Broadcast(msg)
+	})
+
+	webSocketManager.HandleDisconnect(func(s *melody.Session) {
+		fmt.Println("disconnected")
+		sg.Done()
+	})
 
 	apiRouter.HandleFunc("/user/create", createNewUser)
 
@@ -69,13 +83,13 @@ func createNewUser(response http.ResponseWriter, request *http.Request) {
 }
 
 func startWebSocketConnection(response http.ResponseWriter, request *http.Request) {
-	webSocketManager := melody.New()
+
+	fmt.Println("websocket attempted to connect")
+	sg.Add(1)
+
 	webSocketManager.HandleRequest(response, request)
 
-	webSocketManager.HandleMessage(func(sess *melody.Session, msg []byte) {
-		webSocketManager.Broadcast(msg)
-	})
-
+	sg.Wait()
 }
 
 func indexHandler(filename string) func(response http.ResponseWriter, request *http.Request) {

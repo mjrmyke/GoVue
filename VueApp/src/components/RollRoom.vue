@@ -1,6 +1,6 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
+    <h1> ok</h1>
     <h1>{{ roomid }}</h1>
     <h2>Hiya</h2>
     <ul>
@@ -82,13 +82,14 @@
       </li>
     </ul>
     <ul id="messages"></ul>
-    <form action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
-    </form>
+  <input type="text" v-model="message"/>
+  <button @click="emitEvent">emit</button>
+  <div><span>Response is:</span>{{response}}</div>
   </div>
 </template>
 
 <script>
+/* eslint-disable */
 
 
 export default {
@@ -99,13 +100,34 @@ export default {
       ws: null
     };
   },
-  created() {
-      this.ws = new WebSocket("ws://" + window.location.host +'/ws'+ window.location.hash.split('#').join(''))
+  created: function() {
+      this.ws = new WebSocket("ws://" + window.location.hostname +'/ws'+ window.location.hash.split('#').join(''))
+      this.windowLocation = window.location.hash.split('#');
+    
+      this.ws.onopen = function (event) {
+        console.log("Opened WS connection");
+      }
+      
+      this.ws.onmessage = event => {
+        console.log("received message: " + event.data);
+        this.response = event.data;
+      }
   },
-  methods () {
+  methods: {
+    emitEvent() {
+      this.ws.send(this.message);
+      console.log('event emitted')
+    }
 
   },
+  data: function() {
+    return {
+      message : '',
+      roomid: this.windowlocation,
+      response: '',
 
+    }
+  }
 };
 
 
