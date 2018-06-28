@@ -110,7 +110,7 @@ export default {
       
       this.ws.onmessage = event => {
         console.log("received message: " + event.data);
-        this.response = event.data;
+        this.response.push(event.data);
       }
   },
   methods: {
@@ -124,7 +124,7 @@ export default {
     return {
       message : '',
       roomid: this.windowlocation,
-      response: '',
+      response: [],
 
     }
   }
