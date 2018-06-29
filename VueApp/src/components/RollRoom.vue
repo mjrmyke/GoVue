@@ -63,6 +63,7 @@ export default {
     emitEvent() {
       this.ws.send(JSON.stringify({from: this.name, message: this.message}));
       console.log('event emitted')
+      this.message = "";
     },
 
     sendWSMessage(message) {
