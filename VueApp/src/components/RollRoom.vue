@@ -1,12 +1,19 @@
 <template>
   <div class="hello">
-    <h1> ok</h1>
     <h1>{{ title }}</h1>
   <input type="text" v-model="name"/>
 
     <ul id="messages"></ul>
-  <input type="text" v-model="message"/>
+  Your name: <input type="text" v-model="message"/>
   <button @click="emitEvent">emit</button>
+    <button @click="emitDiceRoll(100)">d100</button>
+    <button @click="emitDiceRoll(20)">d20</button>
+    <button @click="emitDiceRoll(12)">d12</button>
+    <button @click="emitDiceRoll(10)">d10</button>
+    <button @click="emitDiceRoll(8)">d8</button>
+    <button @click="emitDiceRoll(6)">d6</button>
+    <button @click="emitDiceRoll(4)">d4</button>
+
   <div>
     
     <ul>
@@ -49,8 +56,6 @@ export default {
       this.ws.onmessage = event => {
         console.log("received message: " + event.data);
         this.x = JSON.parse(event.data);
-
-
           this.responses.push(this.x);
       }
   },
@@ -58,8 +63,16 @@ export default {
     emitEvent() {
       this.ws.send(JSON.stringify({from: this.name, message: this.message}));
       console.log('event emitted')
-    }
+    },
 
+    sendWSMessage(message) {
+      this.ws.send(JSON.stringify({from: this.name, message: message}));
+  },
+    emitDiceRoll(typeOfDice) {
+      var tempmessage;
+      tempmessage = "is rolling a d" + typeOfDice + " which rolled: " + Math.floor((Math.random() * typeOfDice) + 1);
+      this.sendWSMessage(tempmessage);
+    },
   },
   data: function() {
     return {
