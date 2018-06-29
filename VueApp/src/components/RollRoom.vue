@@ -2,6 +2,7 @@
   <div class="hello">
     <h1> ok</h1>
     <h1>{{ title }}</h1>
+  <input type="text" v-model="name"/>
 
     <ul id="messages"></ul>
   <input type="text" v-model="message"/>
@@ -9,9 +10,12 @@
   <div>
     
     <ul>
+        <div v-if="responses.length">
         <li v-for="item in responses">
-          {{ item.message }}
+          {{item.from}} said: {{ item.message }}
         </li>
+        </div>
+
     </ul>
   
   
@@ -32,8 +36,11 @@ export default {
     };
   },
   created: function() {
+      document.title =  window.location.hash.split('/')[window.location.hash.split('/').length-1];
       this.ws = new WebSocket("ws://" + window.location.hostname +'/ws'+ window.location.hash.split('#').join(''))
       this.windowLocation = window.location.hash.split('#');
+      this.id = Math.floor((Math.random() * 100) + 1);
+      this.name = "Guest" + this.id;
     
       this.ws.onopen = function (event) {
         console.log("Opened WS connection");
@@ -41,12 +48,15 @@ export default {
       
       this.ws.onmessage = event => {
         console.log("received message: " + event.data);
-        this.responses.push({from: '', message: event.data});
+        this.x = JSON.parse(event.data);
+
+
+          this.responses.push(this.x);
       }
   },
   methods: {
     emitEvent() {
-      this.ws.send(this.message);
+      this.ws.send(JSON.stringify({from: this.name, message: this.message}));
       console.log('event emitted')
     }
 
@@ -56,12 +66,10 @@ export default {
       message : '',
       title: 'Roll Room',
       roomid: this.windowlocation,
-      responses:[ {
-        from: '',
-        message: ''
-      }]
-
-        ,
+      responses:[],
+      id: this.id,
+      name: '',
+  
 
     }
   }

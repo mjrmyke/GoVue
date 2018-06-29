@@ -17,11 +17,15 @@ import (
 
 var wg sync.WaitGroup
 var sg sync.WaitGroup
-var webSocketManager *melody.Melody
+
+var webSocketManagerContainer map[string]*melody.Melody
+
+// var webSocketManager *melody.Melody
 
 func main() {
 	log.SetFormatter(&log.TextFormatter{})
 	log.SetOutput(os.Stdout)
+	webSocketManagerContainer = make(map[string]*melody.Melody)
 
 	devPtr := flag.Bool("dev", false, "a bool")
 	flag.Parse()
@@ -46,19 +50,8 @@ func startVueServer(port string) {
 	router := mux.NewRouter().StrictSlash(true)
 
 	apiRouter := router.PathPrefix("/api/").Subrouter()
-	webSocketManager = melody.New()
 
 	router.HandleFunc("/ws/roll/{room}", startWebSocketConnection)
-
-	webSocketManager.HandleMessage(func(sess *melody.Session, msg []byte) {
-		fmt.Println("websock message received: ", msg)
-		webSocketManager.Broadcast(msg)
-	})
-
-	webSocketManager.HandleDisconnect(func(s *melody.Session) {
-		fmt.Println("disconnected")
-		sg.Done()
-	})
 
 	apiRouter.HandleFunc("/user/create", createNewUser)
 
@@ -83,10 +76,30 @@ func createNewUser(response http.ResponseWriter, request *http.Request) {
 }
 
 func startWebSocketConnection(response http.ResponseWriter, request *http.Request) {
+	urlPathVars := mux.Vars(request)
+	var webSocketManager *melody.Melody
+
+	if val, ok := webSocketManagerContainer[urlPathVars["room"]]; ok {
+		fmt.Println("Retrieved connection manager")
+		webSocketManager = val
+	} else {
+		fmt.Println("Created connection manager")
+		webSocketManager = melody.New()
+		webSocketManagerContainer[urlPathVars["room"]] = webSocketManager
+	}
 
 	fmt.Println("websocket attempted to connect")
 	sg.Add(1)
 
+	webSocketManager.HandleMessage(func(sess *melody.Session, msg []byte) {
+		fmt.Println("websock message received: ", msg)
+		webSocketManager.Broadcast(msg)
+	})
+
+	webSocketManager.HandleDisconnect(func(s *melody.Session) {
+		fmt.Println("disconnected")
+		sg.Done()
+	})
 	webSocketManager.HandleRequest(response, request)
 
 	sg.Wait()

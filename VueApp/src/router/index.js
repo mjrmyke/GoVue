@@ -19,6 +19,7 @@ export default new Router({
       name: 'RollRoom',
       component: RollRoom,
       props: true,
+      meta: {title: 'Home'}
     },
   ],
 });

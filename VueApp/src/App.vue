@@ -8,7 +8,10 @@
 <script>
 export default {
   name: 'App',
+  title: 'cory sucks',
 };
+
+
 </script>
 
 <style>
