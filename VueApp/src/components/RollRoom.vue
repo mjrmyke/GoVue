@@ -1,10 +1,10 @@
 <template>
   <div class="hello">
     <h1>{{ title }}</h1>
-  <input type="text" v-model="name"/>
+   Your name:<input type="text" v-model="name"/>
 
     <ul id="messages"></ul>
-  Your name: <input type="text" v-model="message"/>
+  <input type="text" v-model="message"/>
   <button @click="emitEvent">emit</button>
     <button @click="emitDiceRoll(100)">d100</button>
     <button @click="emitDiceRoll(20)">d20</button>
