@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"math"
 	"net/http"
 	"os"
 	"sync"
@@ -85,6 +86,7 @@ func startWebSocketConnection(response http.ResponseWriter, request *http.Reques
 	} else {
 		fmt.Println("Created connection manager")
 		webSocketManager = melody.New()
+		webSocketManager.Config.MaxMessageSize = math.MaxInt64 - 1
 		webSocketManagerContainer[urlPathVars["room"]] = webSocketManager
 	}
 
