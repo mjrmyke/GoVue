@@ -10,14 +10,14 @@
       <div id="chatContainer">
         <ul>
         <li v-for="item in responses">
-          {{item.from}}: {{item.message}}
+          <span class="userName">{{item.from}}:</span> {{item.message}}
         </li>    
 
         </ul>
       </div>
       <div id="userList">
         <li v-for="item in userList">
-              asd
+              {{item}}
         </li>
       </div>
     </div>
@@ -52,22 +52,21 @@ export default {
     };
   },
   created: function() {
-      document.title =  window.location.hash.split('/')[window.location.hash.split('/').length-1];
-      this.ws = new WebSocket("ws://" + window.location.hostname +'/ws'+ window.location.hash.split('#').join(''))
-      this.windowLocation = window.location.hash.split('#');
-      this.id = Math.floor((Math.random() * 100) + 1);
-      this.name = "Guest" + this.id;
-
-
+      this.pageInit()
       this.connectionInit()
-
-
   },
   methods: {
     emitEvent() {
       this.ws.send(JSON.stringify({from: this.name, message: this.message}));
       console.log('event emitted')
       this.message = "";
+    },
+    pageInit() {
+      document.title =  window.location.hash.split('/')[window.location.hash.split('/').length-1];
+      this.ws = new WebSocket("ws://" + window.location.hostname +'/ws'+ window.location.hash.split('#').join(''))
+      this.windowLocation = window.location.hash.split('#');
+      this.id = Math.floor((Math.random() * 100) + 1);
+      this.name = "Guest" + this.id;
     },
     sendWSMessage(message) {
       this.ws.send(JSON.stringify({from: this.name, message: message}));
@@ -91,6 +90,11 @@ export default {
          var element = document.getElementById("chatContainer");
         console.log("received message: " + event.data);
         this.x = JSON.parse(event.data);
+
+        if (!this.userList.includes(this.x.from)) {
+          this.userList.push(this.x.from);
+        }
+
         this.responses.push(this.x);
         element.scrollTop = element.scrollHeight;
       }
@@ -106,11 +110,7 @@ export default {
       id: this.id,
       name: '',
       status: 'connecting',
-      userList: [
-        {
-        name: "placeholder user"
-        },
-      ],
+      userList: ['asd'],
     }
   }
 };
@@ -118,19 +118,17 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
 #container {
   background-color: #42b983;
   width: 100%;
   height: 80%;
   display: flex; 
   flex-direction: column;
-
   min-height: 80vh;
-
 }
 
 #chatWrapper {
+  box-sizing: border-box;
   background-color: green;
   height: 75vh;
   min-width: 100vw;
@@ -139,10 +137,12 @@ export default {
 }
 
 #chatContainer {  
+  border-left: 25px solid;
+  border-image: repeating-linear-gradient(to bottom, #42b983, cornflowerblue) 25;
   height: 100%;
   width: 90%;
   overflow-y: scroll;
-  background-color:turquoise;
+  background-color: white;
 }
 
 #chatContainer ul {
@@ -150,37 +150,53 @@ export default {
 }
 
 #chatInputContainer {
-  padding-top: 1vh;
+  padding: 1vh;
   width: 100%;
   background-color:cornflowerblue;
 }
+
 #userList{
-  background-color: grey;
+  background-color: white;
+  border-left: 10px solid;
+  border-right: 25px solid;
+  border-image: repeating-linear-gradient(to bottom, #42b983, cornflowerblue) 25;
   width: 10vw;
   z-index: 1;
 }
 
+.diceContainer {
+  padding-bottom: 5px;
+}
+
 .chatInput {
   width:  40vw;
-  margin-bottom: 10px;
+  margin-bottom: 10px;  
 }
 
 .roomTitleContainer {
   height: 16vh;
 }
 
+.userName {
+  color: blue;
+}
+
 h1, h2 {
   font-weight: normal;
 }
+
 ul {
   list-style-type: none;
   padding: 0;
 }
+
 li {
   display: block;
   margin: 0 10px;
 }
+
 a {
   color: #42b983;
 }
+
 </style>

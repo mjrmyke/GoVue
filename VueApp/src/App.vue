@@ -26,7 +26,9 @@ export default {
   text-align: center;
   color: #2c3e50;
 }
+
 body {
+  overflow: hidden;
   min-height: 100vh;
   min-width: 100vh;
   margin: 0;
