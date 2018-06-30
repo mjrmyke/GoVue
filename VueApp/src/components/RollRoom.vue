@@ -9,13 +9,13 @@
     <div id="chatWrapper">
       <div id="chatContainer">
         <ul>
-            <li v-for="item in responses">
+            <li v-for="item in userList">
               asd
             </li>
         </ul>
       </div>
       <div id="userList">
-        <li v-for="item in userList">
+        <li v-for="item in responses">
           {{item.name}}
         </li>      
       </div>
