@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"math"
 	"net/http"
 	"os"
 	"sync"
@@ -21,7 +20,11 @@ var sg sync.WaitGroup
 
 var webSocketManagerContainer map[string]*melody.Melody
 
-// var webSocketManager *melody.Melody
+type roomInfo struct {
+	manager *melody.Melody
+	route   string
+	rollers []string
+}
 
 func main() {
 	log.SetFormatter(&log.TextFormatter{})
@@ -35,26 +38,22 @@ func main() {
 		fmt.Println("Starting Server, serving on :80")
 		go startVueServer(":80")
 	} else {
-		fmt.Println("Starting Dev Server, serving on localhost:80")
+		fmt.Println("Starting Dev Server, serving on :80")
 		go startVueServer("localhost:80")
 	}
 
 	wg.Add(2)
-
 	wg.Wait()
-
 }
 
 func startVueServer(port string) {
 	defer wg.Done()
 
 	router := mux.NewRouter().StrictSlash(true)
-
 	apiRouter := router.PathPrefix("/api/").Subrouter()
+	initEndPoints(apiRouter)
 
 	router.HandleFunc("/ws/roll/{room}", startWebSocketConnection)
-
-	apiRouter.HandleFunc("/user/create", createNewUser)
 
 	router.PathPrefix("/static").Handler(http.FileServer(http.Dir("VueApp/dist")))
 	router.PathPrefix("/").HandlerFunc(indexHandler("VueApp/dist/index.html"))
@@ -72,38 +71,13 @@ func startVueServer(port string) {
 	log.Fatal(srv.ListenAndServe())
 }
 
-func createNewUser(response http.ResponseWriter, request *http.Request) {
-
-}
-
 func startWebSocketConnection(response http.ResponseWriter, request *http.Request) {
-	urlPathVars := mux.Vars(request)
-	var webSocketManager *melody.Melody
-
-	if val, ok := webSocketManagerContainer[urlPathVars["room"]]; ok {
-		fmt.Println("Retrieved connection manager")
-		webSocketManager = val
-	} else {
-		fmt.Println("Created connection manager")
-		webSocketManager = melody.New()
-		webSocketManager.Config.MaxMessageSize = math.MaxInt64 - 1
-		webSocketManagerContainer[urlPathVars["room"]] = webSocketManager
-	}
-
-	fmt.Println("websocket attempted to connect")
 	sg.Add(1)
+	urlPathVars := mux.Vars(request)
+	websocketManager := retrieveOrCreateRoom(urlPathVars["room"])
 
-	webSocketManager.HandleMessage(func(sess *melody.Session, msg []byte) {
-		fmt.Println("websock message received: ", msg)
-		webSocketManager.Broadcast(msg)
-	})
-
-	webSocketManager.HandleDisconnect(func(s *melody.Session) {
-		fmt.Println("disconnected")
-		sg.Done()
-	})
-	webSocketManager.HandleRequest(response, request)
-
+	handleWebSocketEvents(websocketManager)
+	websocketManager.HandleRequest(response, request)
 	sg.Wait()
 }
 

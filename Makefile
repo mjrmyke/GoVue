@@ -16,3 +16,4 @@ devfront:
 devback:
 	go build -o GoVueApp
 	./GoVueApp -dev
+
