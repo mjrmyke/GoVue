@@ -3,9 +3,21 @@ package main
 import (
 	"fmt"
 	"math"
+	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/olahol/melody"
 )
+
+func startWebSocketConnection(response http.ResponseWriter, request *http.Request) {
+	sg.Add(1)
+	urlPathVars := mux.Vars(request)
+	websocketManager := retrieveOrCreateRoom(urlPathVars["room"])
+
+	handleWebSocketEvents(websocketManager)
+	websocketManager.HandleRequest(response, request)
+	sg.Wait()
+}
 
 func handleWebSocketEvents(webSocketManager *melody.Melody) {
 	webSocketManager.HandleMessage(func(sess *melody.Session, msg []byte) {

@@ -71,16 +71,6 @@ func startVueServer(port string) {
 	log.Fatal(srv.ListenAndServe())
 }
 
-func startWebSocketConnection(response http.ResponseWriter, request *http.Request) {
-	sg.Add(1)
-	urlPathVars := mux.Vars(request)
-	websocketManager := retrieveOrCreateRoom(urlPathVars["room"])
-
-	handleWebSocketEvents(websocketManager)
-	websocketManager.HandleRequest(response, request)
-	sg.Wait()
-}
-
 func indexHandler(filename string) func(response http.ResponseWriter, request *http.Request) {
 	realHandler := func(response http.ResponseWriter, request *http.Request) {
 		http.ServeFile(response, request, filename)
