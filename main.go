@@ -18,7 +18,7 @@ import (
 var wg sync.WaitGroup
 var sg sync.WaitGroup
 
-var webSocketManagerContainer map[string]*melody.Melody
+var webSocketManagerContainer map[string]roomInfo
 
 type roomInfo struct {
 	manager *melody.Melody
@@ -29,7 +29,7 @@ type roomInfo struct {
 func main() {
 	log.SetFormatter(&log.TextFormatter{})
 	log.SetOutput(os.Stdout)
-	webSocketManagerContainer = make(map[string]*melody.Melody)
+	webSocketManagerContainer = make(map[string]roomInfo)
 
 	devPtr := flag.Bool("dev", false, "a bool")
 	flag.Parse()

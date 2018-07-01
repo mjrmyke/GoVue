@@ -110,7 +110,11 @@ export default {
         }
 
         this.responses.push(this.x);
-        element.scrollTop = element.scrollHeight;
+
+        setTimeout(function() {
+          element.scrollTop = element.scrollHeight;
+          }, 25);
+
       }
     },
     customDie(numberOfDie, typeOfDie, constant) {
@@ -122,10 +126,10 @@ export default {
         var newRoll = Math.floor((Math.random() * typeOfDie) + 1);
         dieRolls.push(newRoll);
       }
-      
+
       total = LO.sum(dieRolls) + Number(constant);
       
-      tempMessage = "roll a " + total + " by rolling " + numberOfDie + "d" + typeOfDie 
+      tempMessage = "rolled a " + total + "by rolling " + numberOfDie + "d" + typeOfDie 
                     + " + " + constant + "  rolls: (" + dieRolls + ")";
 
       this.sendWSMessage(tempMessage);
@@ -164,7 +168,7 @@ export default {
 #chatWrapper {
   box-sizing: border-box;
   background-color: green;
-  height: 75vh;
+  height: 74vh;
   min-width: 100vw;
   display: flex;
   flex-direction: row;
@@ -195,6 +199,7 @@ export default {
   padding: 1vh;
   width: 100%;
   background-color:cornflowerblue;
+  padding-bottom: 10px;
 }
 
 #userList{
@@ -221,6 +226,7 @@ export default {
 .chatInput {
   width:  40vw;
   margin-bottom: 10px;  
+  margin-top: 5px;
 }
 
 .roomTitleContainer {

@@ -15,32 +15,33 @@ func startWebSocketConnection(response http.ResponseWriter, request *http.Reques
 	websocketManager := retrieveOrCreateRoom(urlPathVars["room"])
 
 	handleWebSocketEvents(websocketManager)
-	websocketManager.HandleRequest(response, request)
+	websocketManager.manager.HandleRequest(response, request)
 	sg.Wait()
 }
 
-func handleWebSocketEvents(webSocketManager *melody.Melody) {
-	webSocketManager.HandleMessage(func(sess *melody.Session, msg []byte) {
+func handleWebSocketEvents(webSocketManager roomInfo) {
+	webSocketManager.manager.HandleMessage(func(sess *melody.Session, msg []byte) {
 		fmt.Println("websock message received: ", msg)
-		webSocketManager.Broadcast(msg)
+		webSocketManager.manager.Broadcast(msg)
 	})
 
-	webSocketManager.HandleDisconnect(func(s *melody.Session) {
+	webSocketManager.manager.HandleDisconnect(func(s *melody.Session) {
 		fmt.Println("disconnected")
 		sg.Done()
 	})
 }
 
-func retrieveOrCreateRoom(room string) *melody.Melody {
-	var webSocketManager *melody.Melody
+func retrieveOrCreateRoom(room string) roomInfo {
+	var webSocketManager roomInfo
 
 	if val, ok := webSocketManagerContainer[room]; ok {
 		fmt.Println("Retrieved connection manager")
 		webSocketManager = val
 	} else {
 		fmt.Println("Created connection manager")
-		webSocketManager = melody.New()
-		webSocketManager.Config.MaxMessageSize = math.MaxInt64 - 1
+		webSocketManager.manager = melody.New()
+		webSocketManager.manager.Config.MaxMessageSize = math.MaxInt64 - 1
+		webSocketManager.route = room
 		webSocketManagerContainer[room] = webSocketManager
 	}
 
