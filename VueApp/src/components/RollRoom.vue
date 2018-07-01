@@ -3,14 +3,14 @@
   <div class="roomTitleContainer">
     <h2>{{ title }}</h2>
     <h3>Your status is: {{ status }} </h3>
-      Your name:<input type="text" v-model="name"/>
+      Your name:<input class="nameInput" type="text" v-model="name" debounce="500"/>
   </div>
 
     <div id="chatWrapper">
       <div id="chatContainer">
         <ul>
         <li v-for="item in responses">
-          <span class="userName">{{item.from}}:</span> {{item.message}} {{item.system}}
+          <span class="userName">{{item.from}}: {{item.system}}</span> {{item.message}} 
         </li>    
 
         </ul>
@@ -65,7 +65,10 @@ export default {
   },
   methods: {
     emitEvent() {
-      this.ws.send(JSON.stringify({from: this.name, message: this.message}));
+      if (this.message === "") {
+        return;
+      }
+      this.sendWSMessage(this.message);
       console.log('event emitted')
       this.message = "";
     },
@@ -151,7 +154,7 @@ export default {
 
       total = LO.sum(dieRolls) + Number(constant);
       
-      tempMessage = "rolled a " + total + "by rolling " + numberOfDie + "d" + typeOfDie 
+      tempMessage = "rolled a " + total + " by rolling " + numberOfDie + "d" + typeOfDie 
                     + " + " + constant + "  rolls: (" + dieRolls + ")";
 
       this.sendWSMessage(tempMessage);
@@ -221,7 +224,6 @@ export default {
   padding: 1vh;
   width: 100%;
   background-color:cornflowerblue;
-  padding-bottom: 10px;
 }
 
 #userList {
@@ -240,6 +242,9 @@ export default {
   color: white;
 }
 
+.nameInput {
+  width: 8vw;
+}
 .customDieSubmit {
   margin-right: 100px;
 }
@@ -250,6 +255,38 @@ export default {
 
 .diceContainer {
   padding-bottom: 5px;
+}
+
+.diceContainer input {
+  width: 1vw;
+  padding-left: 10px;
+  padding-right: 10px;
+  height: 2vh;
+}
+
+input {
+  background-color: inherit;
+  padding-left: 10px;
+  border: 1px black solid;
+  width: 1vw;
+  height: 1.75vh;
+}
+
+button {
+  background-color: inherit;
+  border: 1px solid black;
+  width: auto;
+  padding-left: 10px;
+  padding-right: 10px;
+  height: 2vh;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+
+button:hover {
+  border: 1px solid green;
+  color: white;
 }
 
 .chatInput {
