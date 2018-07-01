@@ -10,7 +10,7 @@
       <div id="chatContainer">
         <ul>
         <li v-for="item in responses">
-          <span class="userName">{{item.from}}:</span> {{item.message}}
+          <span class="userName">{{item.from}}:</span> {{item.message}} {{item.system}}
         </li>    
 
         </ul>
@@ -70,7 +70,8 @@ export default {
       this.message = "";
     },
     pageInit() {
-      document.title =  window.location.hash.split('/')[window.location.hash.split('/').length-1];
+      this.roomid = window.location.hash.split('/')[window.location.hash.split('/').length-1];
+      document.title = this.roomid;
       this.ws = new WebSocket("ws://" + window.location.hostname +'/ws'+ window.location.hash.split('#').join(''))
       this.windowLocation = window.location.hash.split('#');
       this.id = Math.floor((Math.random() * 100) + 1);
@@ -80,7 +81,20 @@ export default {
       this.ws.send(JSON.stringify(
         { 
           from: this.name, 
-          message: message
+          message: message,
+          system: '',
+          room: '',
+          }
+        )
+      );
+    },
+    sendWSSystemMessage(input) {
+      this.ws.send(JSON.stringify(
+        { 
+          from: this.name, 
+          system: input,
+          room: this.roomid,
+          message: ''
           }
         )
       );
@@ -88,11 +102,12 @@ export default {
     emitDiceRoll(typeOfDice) {
       var tempMessage;
       tempMessage = "is rolling a d" + typeOfDice + " which rolled: " + Math.floor((Math.random() * typeOfDice) + 1);
-      this.sendWSMessage(tempMessage);
+      this.sendWSMessage(tempMessage);  
     },
     connectionInit() {
       this.ws.onopen = event => {
         console.log("Opened WS connection");
+        this.sendWSSystemMessage('connected');
         this.status = "connected";
       }
 
@@ -105,8 +120,15 @@ export default {
         console.log("received message: " + event.data);
         this.x = JSON.parse(event.data);
 
-        if (!this.userList.includes(this.x.from)) {
-          this.userList.push(this.x.from);
+        if (this.x.system.length > 0) {
+          if (this.x.system == "connected") {
+            this.userList.push(this.x.from)
+          }
+
+          if (this.x.system == "disconnected") {
+            var index = this.userList.indexOf(this.x.from);
+            Vue.delete(this.userList, index);
+          }
         }
 
         this.responses.push(this.x);
@@ -140,12 +162,12 @@ export default {
     return {
       message : '',
       title: 'Roll Room',
-      roomid: this.windowlocation,
+      roomid: '',
       responses:[],
       id: this.id,
       name: '',
       status: 'connecting',
-      userList: ['asd'],
+      userList: [],
       numDieInput: 1,
       typeDieInput: 4,
       constantAdd: 0,
@@ -202,13 +224,20 @@ export default {
   padding-bottom: 10px;
 }
 
-#userList{
+#userList {
   background-color: white;
   border-left: 10px solid;
   border-right: 25px solid;
   border-image: repeating-linear-gradient(to bottom, #42b983, cornflowerblue) 25;
   width: 10vw;
   z-index: 1;
+}
+
+#userList li {
+  margin: 2px;
+  padding: 1px;
+  background-color: darkcyan;
+  color: white;
 }
 
 .customDieSubmit {

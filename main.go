@@ -23,7 +23,7 @@ var webSocketManagerContainer map[string]roomInfo
 type roomInfo struct {
 	manager *melody.Melody
 	route   string
-	rollers []string
+	rollers map[string]bool
 }
 
 func main() {
