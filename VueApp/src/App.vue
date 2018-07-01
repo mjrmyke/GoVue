@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div id="header">
-      header 
+      Roll With Friends
     </div>
     <router-view/>
   </div>
@@ -33,4 +33,9 @@ body {
   min-width: 100vh;
   margin: 0;
 }
+
+#header {
+background-color: aqua;
+}
+
 </style>
