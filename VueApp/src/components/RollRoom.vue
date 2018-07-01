@@ -24,6 +24,14 @@
 
   <div id="chatInputContainer">
     <div class="diceContainer">
+      <input type="text" id="numDieInput" class="dieInput" v-model="numDieInput"/>
+        d
+      <input type="text" id="typeDieInput" class="dieInput" v-model="typeDieInput"/>
+        +
+      <input type="text" id="constantAdd" class="dieInput" v-model="constantAdd"/>
+      <button class="customDieSubmit" @click="customDie(numDieInput, typeDieInput, constantAdd)">Custom</button>
+
+
       <button @click="emitDiceRoll(100)">d100</button>
       <button @click="emitDiceRoll(20)">d20</button>
       <button @click="emitDiceRoll(12)">d12</button>
@@ -69,12 +77,18 @@ export default {
       this.name = "Guest" + this.id;
     },
     sendWSMessage(message) {
-      this.ws.send(JSON.stringify({from: this.name, message: message}));
+      this.ws.send(JSON.stringify(
+        { 
+          from: this.name, 
+          message: message
+          }
+        )
+      );
     },
     emitDiceRoll(typeOfDice) {
-      var tempmessage;
-      tempmessage = "is rolling a d" + typeOfDice + " which rolled: " + Math.floor((Math.random() * typeOfDice) + 1);
-      this.sendWSMessage(tempmessage);
+      var tempMessage;
+      tempMessage = "is rolling a d" + typeOfDice + " which rolled: " + Math.floor((Math.random() * typeOfDice) + 1);
+      this.sendWSMessage(tempMessage);
     },
     connectionInit() {
       this.ws.onopen = event => {
@@ -99,6 +113,23 @@ export default {
         element.scrollTop = element.scrollHeight;
       }
     },
+    customDie(numberOfDie, typeOfDie, constant) {
+      var dieRolls = []
+      var total = 0;
+      var tempMessage;
+
+      for (var i=0; i < numberOfDie; i++) {
+        var newRoll = Math.floor((Math.random() * typeOfDie) + 1);
+        dieRolls.push(newRoll);
+      }
+      debugger;
+      total = LO.sum(dieRolls) + constant;
+      
+      tempMessage = "roll a " + total + " by rolling " + numberOfDie + "d" + typeOfDie 
+                    + " + " + constant + "  rolls: (" + dieRolls + ")";
+
+      this.sendWSMessage(tempMessage);
+    }
 
   },
   data: function() {
@@ -111,6 +142,9 @@ export default {
       name: '',
       status: 'connecting',
       userList: ['asd'],
+      numDieInput: 1,
+      typeDieInput: 4,
+      constantAdd: 0,
     }
   }
 };
@@ -162,6 +196,14 @@ export default {
   border-image: repeating-linear-gradient(to bottom, #42b983, cornflowerblue) 25;
   width: 10vw;
   z-index: 1;
+}
+
+.customDieSubmit {
+  margin-right: 100px;
+}
+
+.dieInput {
+  width:25px;
 }
 
 .diceContainer {
