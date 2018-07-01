@@ -122,7 +122,7 @@ export default {
         var newRoll = Math.floor((Math.random() * typeOfDie) + 1);
         dieRolls.push(newRoll);
       }
-      debugger;
+      
       total = LO.sum(dieRolls) + Number(constant);
       
       tempMessage = "roll a " + total + " by rolling " + numberOfDie + "d" + typeOfDie 
@@ -177,6 +177,14 @@ export default {
   width: 90%;
   overflow-y: scroll;
   background-color: white;
+}
+
+#chatContainer li {
+  border-top:lightgrey 1px solid;
+  border-bottom:lightgrey 1px solid;
+  background-color: lightcyan;
+  padding-top: 2px;
+  padding-bottom: 2px;
 }
 
 #chatContainer ul {
