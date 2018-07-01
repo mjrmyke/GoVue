@@ -123,7 +123,7 @@ export default {
         dieRolls.push(newRoll);
       }
       debugger;
-      total = LO.sum(dieRolls) + constant;
+      total = LO.sum(dieRolls) + Number(constant);
       
       tempMessage = "roll a " + total + " by rolling " + numberOfDie + "d" + typeOfDie 
                     + " + " + constant + "  rolls: (" + dieRolls + ")";
