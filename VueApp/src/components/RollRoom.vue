@@ -25,11 +25,11 @@
 
   <div id="chatInputContainer">
     <div class="diceContainer">
-      <input type="text" id="numDieInput" class="dieInput" v-model="numDieInput"/>
+      <input type="text" id="numDieInput" class="dieInput"  v-on:keyup.enter="customDie(numDieInput, typeDieInput, constantAdd)" v-model="numDieInput"/>
         d
-      <input type="text" id="typeDieInput" class="dieInput" v-model="typeDieInput"/>
+      <input type="text" id="typeDieInput" class="dieInput" v-on:keyup.enter="customDie(numDieInput, typeDieInput, constantAdd)"  v-model="typeDieInput"/>
         +
-      <input type="text" id="constantAdd" class="dieInput" v-model="constantAdd"/>
+      <input type="text" id="constantAdd" class="dieInput"  v-on:keyup.enter="customDie(numDieInput, typeDieInput, constantAdd)" v-model="constantAdd"/>
       <button class="customDieSubmit" @click="customDie(numDieInput, typeDieInput, constantAdd)">Custom</button>
 
 
