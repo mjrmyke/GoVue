@@ -2,6 +2,10 @@ Currently using the template to develop a collaborative rolling application, wil
 
 currently hosted here: http://voice.mykewalker.com/
 
+using trello to jot down things to do / wip items
+
+https://trello.com/b/pZ8S7xZ9/rollroom
+
 # template
 
 > GoVue template
