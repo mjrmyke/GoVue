@@ -70,7 +70,7 @@ export default {
   },
   methods: {
     debounceInput: LO.debounce(function () {
-        if (this.name.length > 0) {
+        if (this.newName.length > 0) {
           this.sendWSSystemMessage('Changed name to: ' + this.newName, this.newName);
           this.name = this.newName;
           cookies.set('name', this.name);
@@ -155,7 +155,7 @@ export default {
         console.log("received message: " + event.data);
         this.x = JSON.parse(event.data);
 
-        if (this.x.system.length > 0) {
+        if ((this.x.system.length > 0) && (this.x.data.length > 0)) {
           if (this.x.system === "connected") {
             this.userList.push(this.x.from)
           }
