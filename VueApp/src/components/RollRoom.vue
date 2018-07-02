@@ -10,7 +10,7 @@
       <div id="chatContainer">
         <ul>
         <li v-for="item in responses">
-          <span class="userName">{{item.from}}: {{item.system}}</span> {{item.message}} 
+          <span class="time">{{item.time}}</span> <span class="userName">{{item.from}}: {{item.system}}</span> {{item.message}}
         </li>    
 
         </ul>
@@ -49,6 +49,7 @@
 
 <script>
 import LO from 'lodash';
+import cookies from 'js-cookie';
 /* eslint-disable */
 
 
@@ -66,11 +67,13 @@ export default {
   },
   methods: {
     debounceInput: LO.debounce(function () {
-      if (this.name.length > 0) {
-        this.sendWSSystemMessage('Changed name to: ' + this.newName, this.newName);
-        this.name = this.newName;
-        }
-      }, 1000, {maxWait: 2000}),
+        if (this.name.length > 0) {
+          this.sendWSSystemMessage('Changed name to: ' + this.newName, this.newName);
+          this.name = this.newName;
+          cookies.set('name', this.name);
+
+          }
+        }, 1000, {maxWait: 2000}),
     emitEvent() {
       if (this.message === "") {
         return;
@@ -80,14 +83,20 @@ export default {
       this.message = "";
     },
     pageInit() {
+      var savedName = cookies.get('name');
       this.roomid = window.location.hash.split('/')[window.location.hash.split('/').length-1];
       document.title = this.roomid;
       this.ws = new WebSocket("ws://" + window.location.hostname +'/ws'+ window.location.hash.split('#').join(''))
       this.windowLocation = window.location.hash.split('#');
       this.id = Math.floor((Math.random() * 100) + 1);
+
+      if (savedName !== undefined) {
+        this.name = savedName;
+        this.newName = savedName;
+      } else {
       this.name = "Guest" + this.id;
-
-
+      this.newName = this.name;
+      }
     },
     sendWSMessage(message) {
       this.ws.send(JSON.stringify(
@@ -150,6 +159,10 @@ export default {
           }
         }
 
+        this.x.time = new Date();
+        this.x.time = this.x.time.toTimeString();
+        this.x.time = this.x.time.split(' ')[0];
+
         this.responses.push(this.x);
 
         setTimeout(function() {
@@ -189,6 +202,7 @@ export default {
       numDieInput: 1,
       typeDieInput: 4,
       constantAdd: 0,
+      newName: '',
     }
   }
 };
@@ -224,6 +238,7 @@ export default {
 }
 
 #chatContainer li {
+  justify-content: space-between;
   border-top:lightgrey 1px solid;
   border-bottom:lightgrey 1px solid;
   background-color: lightcyan;
@@ -266,6 +281,10 @@ export default {
 
 .dieInput {
   width:25px;
+}
+
+.time {
+  color: grey;
 }
 
 .diceContainer {
