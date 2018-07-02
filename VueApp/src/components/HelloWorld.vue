@@ -4,7 +4,7 @@
     <ul>
       <li>
         <a
-          href="/#/roll/testroomid"
+          href="/#/roll/defaultroom"
         >
           Roll Room
         </a>

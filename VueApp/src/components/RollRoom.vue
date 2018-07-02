@@ -94,8 +94,8 @@ export default {
         this.name = savedName;
         this.newName = savedName;
       } else {
-      this.name = "Guest" + this.id;
-      this.newName = this.name;
+        this.name = "Guest" + this.id;
+        this.newName = this.name;
       }
     },
     sendWSMessage(message) {
@@ -284,6 +284,7 @@ export default {
 }
 
 .time {
+  padding-right: 4px;
   color: grey;
 }
 

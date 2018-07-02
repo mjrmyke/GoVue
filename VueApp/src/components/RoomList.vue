@@ -1,19 +1,7 @@
 <template>
   <div class="hello">
     <h1>{{ title }}</h1>
-   Your name:<input type="text" v-model="name"/>
-
-    <ul id="messages"></ul>
-  <input type="text" v-model="message"/>
-  <button @click="emitEvent">emit</button>
-    <button @click="emitDiceRoll(100)">d100</button>
-    <button @click="emitDiceRoll(20)">d20</button>
-    <button @click="emitDiceRoll(12)">d12</button>
-    <button @click="emitDiceRoll(10)">d10</button>
-    <button @click="emitDiceRoll(8)">d8</button>
-    <button @click="emitDiceRoll(6)">d6</button>
-    <button @click="emitDiceRoll(4)">d4</button>
-
+      this page will have a list of rooms with rollers rolling, wip
   <div>
     
     <ul>
