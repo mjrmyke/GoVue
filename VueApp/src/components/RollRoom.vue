@@ -155,9 +155,16 @@ export default {
         console.log("received message: " + event.data);
         this.x = JSON.parse(event.data);
 
-        if ((this.x.system.length > 0) && (this.x.data.length > 0)) {
+        if (this.x.data > 0 || this.x.system.length > 0) {
           if (this.x.system === "connected") {
             this.userList.push(this.x.from)
+            this.responses.push(
+              {
+                time: this.getCurrentTime(),
+                from: this.x.from,
+                system: "has connected",
+              }
+              )
           }
 
           if (LO.includes(this.x.system, "Changed name to: ")) {
@@ -179,17 +186,22 @@ export default {
           this.userList.push(this.x.from);
         }
 
-        this.x.time = new Date();
-        this.x.time = this.x.time.toTimeString();
-        this.x.time = this.x.time.split(' ')[0];
+        this.x.time = this.getCurrentTime();
 
-        this.responses.push(this.x);
+        if (this.x.data.length > 0 || this.x.message.length > 0){
+          this.responses.push(this.x);
+        }
 
         setTimeout(function() {
           element.scrollTop = element.scrollHeight;
           }, 25);
 
       }
+    },
+    getCurrentTime() {
+      var tempdate = new Date();
+      tempdate = tempdate.toTimeString();
+      return tempdate = tempdate.split(' ')[0];
     },
     customDie(numberOfDie, typeOfDie, constant) {
       var dieRolls = []
