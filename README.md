@@ -1,9 +1,13 @@
+Currently using the template to develop a collaborative rolling application, will refactor out all of the things not required for a importable template once there are a few examples of database and api usage.
+
 # template
 
 > GoVue template
 
 # Build Setup
 ## requirements
+
+Golang installed correctly, with gopath set.
 
 Nodejs => 8.9.4
 
