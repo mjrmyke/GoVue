@@ -163,6 +163,10 @@ export default {
           if (LO.includes(this.x.system, "Changed name to: ")) {
             var index = this.userList.indexOf(this.x.from);
             Vue.set(this.userList, index, this.x.data);
+
+            var index2 = this.userList.indexOf(this.x.from);
+            Vue.delete(this.userList, index2);
+            Vue.delete(this.userList, this.x.from);
           }
 
           if (this.x.system === "disconnected") {
@@ -171,7 +175,7 @@ export default {
           }
         }
 
-        if (!LO.includes(this.userList, this.x.from)) {
+        if (!LO.includes(this.userList, this.x.from) && this.x.system.length <= 0) {
           this.userList.push(this.x.from);
         }
 
