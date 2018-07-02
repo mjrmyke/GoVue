@@ -1,5 +1,7 @@
 Currently using the template to develop a collaborative rolling application, will refactor out all of the things not required for a importable template once there are a few examples of database and api usage.
 
+currently hosted here: http://voice.mykewalker.com/
+
 # template
 
 > GoVue template
