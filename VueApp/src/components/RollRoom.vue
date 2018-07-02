@@ -3,7 +3,8 @@
   <div class="roomTitleContainer">
     <h2>{{ title }}</h2>
     <h3>Your status is: {{ status }} </h3>
-      Your name:<input class="nameInput" v-on:keyup="debounceInput" type="text" v-model="newName"/>
+      Your name:<input class="nameInput" v-on:keyup="debounceInput" type="text" v-model="newName"/> <br/>
+      <!-- Your color:<input class="jscolor nameInput" value="" v-model="myColor"> -->
   </div>
 
     <div id="chatWrapper">
@@ -50,7 +51,9 @@
 <script>
 import LO from 'lodash';
 import cookies from 'js-cookie';
+// import jscolor from 'jscolor';
 /* eslint-disable */
+// window.jscolor = jscolor;
 
 
 export default {
@@ -97,6 +100,15 @@ export default {
         this.name = "Guest" + this.id;
         this.newName = this.name;
       }
+
+      // jscolor.installByClassName('jscolor');
+      // this.$el.jscolor.fromString(this.value);
+      // $(this.$el).on('change', function(_this){
+      //   return function(){
+      //     _this.$emit('input', this.value);
+      //   }
+      // }(this));
+
     },
     sendWSMessage(message) {
       this.ws.send(JSON.stringify(
@@ -159,6 +171,10 @@ export default {
           }
         }
 
+        if (!LO.includes(this.userList, this.x.from)) {
+          this.userList.push(this.x.from);
+        }
+
         this.x.time = new Date();
         this.x.time = this.x.time.toTimeString();
         this.x.time = this.x.time.split(' ')[0];
@@ -187,6 +203,14 @@ export default {
                     + " + " + constant + "  rolls: (" + dieRolls + ")";
 
       this.sendWSMessage(tempMessage);
+    },
+    getRandomColor() {
+      var letters = '0123456789ABCDEF';
+      var color = '#';
+      for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
     }
   },
   data: function() {
@@ -203,6 +227,7 @@ export default {
       typeDieInput: 4,
       constantAdd: 0,
       newName: '',
+      myColor: this.getRandomColor(),
     }
   }
 };
@@ -274,6 +299,7 @@ export default {
 
 .nameInput {
   width: 8vw;
+  margin-bottom: 8px;
 }
 .customDieSubmit {
   margin-right: 100px;
