@@ -3,7 +3,7 @@
   <div class="roomTitleContainer">
     <h2>{{ title }}</h2>
     <h3>Your status is: {{ status }} </h3>
-      Your name:<input class="nameInput" type="text" v-model="name" debounce="500"/>
+      Your name:<input class="nameInput" v-on:keyup="debounceInput" type="text" v-model="newName"/>
   </div>
 
     <div id="chatWrapper">
@@ -48,6 +48,7 @@
 </template>
 
 <script>
+import LO from 'lodash';
 /* eslint-disable */
 
 
@@ -64,6 +65,12 @@ export default {
       this.connectionInit()
   },
   methods: {
+    debounceInput: LO.debounce(function () {
+      if (this.name.length > 0) {
+        this.sendWSSystemMessage('Changed name to: ' + this.newName, this.newName);
+        this.name = this.newName;
+        }
+      }, 1000, {maxWait: 2000}),
     emitEvent() {
       if (this.message === "") {
         return;
@@ -79,6 +86,8 @@ export default {
       this.windowLocation = window.location.hash.split('#');
       this.id = Math.floor((Math.random() * 100) + 1);
       this.name = "Guest" + this.id;
+
+
     },
     sendWSMessage(message) {
       this.ws.send(JSON.stringify(
@@ -86,17 +95,19 @@ export default {
           from: this.name, 
           message: message,
           system: '',
+          data: '',
           room: '',
           }
         )
       );
     },
-    sendWSSystemMessage(input) {
+    sendWSSystemMessage(input, data) {
       this.ws.send(JSON.stringify(
         { 
           from: this.name, 
           system: input,
           room: this.roomid,
+          data: data,
           message: ''
           }
         )
@@ -124,11 +135,16 @@ export default {
         this.x = JSON.parse(event.data);
 
         if (this.x.system.length > 0) {
-          if (this.x.system == "connected") {
+          if (this.x.system === "connected") {
             this.userList.push(this.x.from)
           }
 
-          if (this.x.system == "disconnected") {
+          if (LO.includes(this.x.system, "Changed name to: ")) {
+            var index = this.userList.indexOf(this.x.from);
+            Vue.set(this.userList, index, this.x.data);
+          }
+
+          if (this.x.system === "disconnected") {
             var index = this.userList.indexOf(this.x.from);
             Vue.delete(this.userList, index);
           }
@@ -159,7 +175,6 @@ export default {
 
       this.sendWSMessage(tempMessage);
     }
-
   },
   data: function() {
     return {
@@ -193,7 +208,7 @@ export default {
 #chatWrapper {
   box-sizing: border-box;
   background-color: green;
-  height: 74vh;
+  height: 73vh;
   min-width: 100vw;
   display: flex;
   flex-direction: row;

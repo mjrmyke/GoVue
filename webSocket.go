@@ -14,6 +14,7 @@ type rollRoomMessage struct {
 	From    string `json:"from"`
 	Message string `json:"message"`
 	System  string `json:"system"`
+	Data    string `json:"data"`
 	Room    string `json:"room"`
 }
 

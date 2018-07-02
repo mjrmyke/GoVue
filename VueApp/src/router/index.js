@@ -9,7 +9,6 @@ import LO from 'lodash';
 
 Vue.use(Router);
 window.Vue = Vue;
-window.LO = LO;
 
 export default new Router({
   routes: [
