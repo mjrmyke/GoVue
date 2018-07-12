@@ -10,21 +10,13 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/olahol/melody"
 
 	log "github.com/sirupsen/logrus"
 )
 
 var wg sync.WaitGroup
-var sg sync.WaitGroup
 
 var webSocketManagerContainer map[string]roomInfo
-
-type roomInfo struct {
-	manager *melody.Melody
-	route   string
-	rollers map[string]bool
-}
 
 func main() {
 	log.SetFormatter(&log.TextFormatter{})

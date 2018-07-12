@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"sync"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/olahol/melody"
@@ -18,17 +20,32 @@ type rollRoomMessage struct {
 	Room    string `json:"room"`
 }
 
+type roomInfo struct {
+	manager *melody.Melody
+	route   string
+	rollers map[string]socketInfo
+}
+
+type socketInfo struct {
+	host        string
+	lastmessage time.Time
+	userName    string
+}
+
 func startWebSocketConnection(response http.ResponseWriter, request *http.Request) {
+	var sg sync.WaitGroup
 	sg.Add(1)
+	var connection socketInfo
+
 	urlPathVars := mux.Vars(request)
 	websocketManager := retrieveOrCreateRoom(urlPathVars["room"])
 
-	handleWebSocketEvents(websocketManager)
+	handleWebSocketEvents(websocketManager, connection, &sg)
 	websocketManager.manager.HandleRequest(response, request)
 	sg.Wait()
 }
 
-func handleWebSocketEvents(webSocketManager roomInfo) {
+func handleWebSocketEvents(webSocketManager roomInfo, connection socketInfo, sg *sync.WaitGroup) {
 	webSocketManager.manager.HandleMessage(func(sess *melody.Session, msg []byte) {
 		var message rollRoomMessage
 		err := json.Unmarshal(msg, &message)
@@ -39,12 +56,12 @@ func handleWebSocketEvents(webSocketManager roomInfo) {
 
 		fmt.Println("websock message received: ", message)
 
-		if len(message.System) > 0 {
-			if !(webSocketManagerContainer[message.Room].rollers[message.From]) {
-				webSocketManagerContainer[message.Room].rollers[message.From] = true
-				webSocketManagerContainer[message.Room] = webSocketManager
-			}
-		}
+		// if len(message.System) > 0 {
+		// 	if !(webSocketManagerContainer[message.Room].rollers[message.From]) {
+		// 		webSocketManagerContainer[message.Room].rollers[message.From] = true
+		// 		webSocketManagerContainer[message.Room] = webSocketManager
+		// 	}
+		// }
 
 		webSocketManager.manager.Broadcast(msg)
 	})
@@ -64,7 +81,7 @@ func retrieveOrCreateRoom(room string) roomInfo {
 	} else {
 		fmt.Println("Created connection manager")
 		webSocketManager.manager = melody.New()
-		webSocketManager.rollers = make(map[string]bool)
+		webSocketManager.rollers = make(map[string]socketInfo)
 		webSocketManager.manager.Config.MaxMessageSize = math.MaxInt64 - 1
 		webSocketManager.route = room
 		webSocketManagerContainer[room] = webSocketManager
