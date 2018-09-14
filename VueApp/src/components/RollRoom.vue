@@ -30,20 +30,20 @@
       <input type="text" id="typeDieInput" class="dieInput" v-on:keyup.enter="customDie(numDieInput, typeDieInput, constantAdd)"  v-model="typeDieInput"/>
         +
       <input type="text" id="constantAdd" class="dieInput"  v-on:keyup.enter="customDie(numDieInput, typeDieInput, constantAdd)" v-model="constantAdd"/>
-      <button class="customDieSubmit" @click="customDie(numDieInput, typeDieInput, constantAdd)">Custom</button>
+      <b-button class="customDieSubmit" @click="customDie(numDieInput, typeDieInput, constantAdd)">Custom</b-button>
 
 
-      <button @click="emitDiceRoll(100)">d100</button>
-      <button @click="emitDiceRoll(20)">d20</button>
-      <button @click="emitDiceRoll(12)">d12</button>
-      <button @click="emitDiceRoll(10)">d10</button>
-      <button @click="emitDiceRoll(8)">d8</button>
-      <button @click="emitDiceRoll(6)">d6</button>
-      <button @click="emitDiceRoll(4)">d4</button>
+      <b-button @click="emitDiceRoll(100)">d100</b-button>
+      <b-button @click="emitDiceRoll(20)">d20</b-button>
+      <b-button @click="emitDiceRoll(12)">d12</b-button>
+      <b-button @click="emitDiceRoll(10)">d10</b-button>
+      <b-button @click="emitDiceRoll(8)">d8</b-button>
+      <b-button @click="emitDiceRoll(6)">d6</b-button>
+      <b-button @click="emitDiceRoll(4)">d4</b-button>
     </div>
 
     <input type="text" class="chatInput" v-on:keyup.enter="emitEvent" v-model="message"/>
-    <button @click="emitEvent">Send</button>
+    <b-button @click="emitEvent">Send</b-button>
   </div>
 </div>
 </template>
@@ -100,14 +100,6 @@ export default {
         this.name = "Guest" + this.id;
         this.newName = this.name;
       }
-
-      // jscolor.installByClassName('jscolor');
-      // this.$el.jscolor.fromString(this.value);
-      // $(this.$el).on('change', function(_this){
-      //   return function(){
-      //     _this.$emit('input', this.value);
-      //   }
-      // }(this));
 
     },
     sendWSMessage(message) {
@@ -349,7 +341,7 @@ input {
   height: 1.75vh;
 }
 
-button {
+/* b-button {
   background-color: inherit;
   border: 1px solid black;
   width: auto;
@@ -359,12 +351,12 @@ button {
   text-align: center;
   text-decoration: none;
   display: inline-block;
-}
+} */
 
-button:hover {
+/* b-button:hover {
   border: 1px solid green;
   color: white;
-}
+} */
 
 .chatInput {
   width:  40vw;
