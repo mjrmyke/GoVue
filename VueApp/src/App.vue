@@ -2,8 +2,8 @@
   <div id="app">
     <div id="header">
       <div id="links">
-        <a href="/">home</a>
-        <a href="#/roll">roll rooms</a>
+        <b-link href="/">home</b-link>
+        <b-link href="#/roll">roll rooms</b-link>
       </div>
       <div>
         Roll With Friends
@@ -52,17 +52,13 @@ body {
 }
 
 #header a {
-  text-decoration: none;
   color: white;
-  padding: 5px;
 }
 
+
 #header a:hover {
-  border-bottom: 2px dashed;
   color: repeating-linear-gradient(to bottom, #42b983, cornflowerblue) 25;
   border-image: repeating-linear-gradient(to right, opaque, #336699) 10;
-  text-decoration: none;
-  padding: 5px;
 }
 
 </style>

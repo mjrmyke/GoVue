@@ -3,8 +3,8 @@
   <div class="roomTitleContainer">
     <h2>{{ title }}</h2>
     <h3>Your status is: {{ status }} </h3>
-      Your name:<input class="nameInput" v-on:keyup="debounceInput" type="text" v-model="newName"/> <br/>
-      <!-- Your color:<input class="jscolor nameInput" value="" v-model="myColor"> -->
+      Your name:<b-form-input class="nameInput" v-on:keyup="debounceInput" type="text" v-model="newName"/> <br/>
+      <!-- Your color:<b-form-input class="jscolor nameInput" value="" v-model="myColor"> -->
   </div>
 
     <div id="chatWrapper">
@@ -25,11 +25,11 @@
 
   <div id="chatInputContainer">
     <div class="diceContainer">
-      <input type="text" id="numDieInput" class="dieInput"  v-on:keyup.enter="customDie(numDieInput, typeDieInput, constantAdd)" v-model="numDieInput"/>
+      <b-form-input type="number" id="numDieInput" class="dieInput"  v-on:keyup.enter="customDie(numDieInput, typeDieInput, constantAdd)" v-model="numDieInput"/>
         d
-      <input type="text" id="typeDieInput" class="dieInput" v-on:keyup.enter="customDie(numDieInput, typeDieInput, constantAdd)"  v-model="typeDieInput"/>
+      <b-form-input type="number" id="typeDieInput" class="dieInput" v-on:keyup.enter="customDie(numDieInput, typeDieInput, constantAdd)"  v-model="typeDieInput"/>
         +
-      <input type="text" id="constantAdd" class="dieInput"  v-on:keyup.enter="customDie(numDieInput, typeDieInput, constantAdd)" v-model="constantAdd"/>
+      <b-form-input type="number" id="constantAdd" class="dieInput"  v-on:keyup.enter="customDie(numDieInput, typeDieInput, constantAdd)" v-model="constantAdd"/>
       <b-button class="customDieSubmit" @click="customDie(numDieInput, typeDieInput, constantAdd)">Custom</b-button>
 
 
@@ -42,7 +42,7 @@
       <b-button @click="emitDiceRoll(4)">d4</b-button>
     </div>
 
-    <input type="text" class="chatInput" v-on:keyup.enter="emitEvent" v-model="message"/>
+    <b-form-input type="text" class="chatInput" v-on:keyup.enter="emitEvent" v-model="message"/>
     <b-button @click="emitEvent">Send</b-button>
   </div>
 </div>
@@ -327,18 +327,14 @@ export default {
 }
 
 .diceContainer input {
-  width: 1vw;
+  width: 3vw;
   padding-left: 10px;
   padding-right: 10px;
   height: 2vh;
 }
 
 input {
-  background-color: inherit;
-  padding-left: 10px;
-  border: 1px black solid;
-  width: 1vw;
-  height: 1.75vh;
+  display:inline;
 }
 
 /* b-button {
@@ -353,10 +349,10 @@ input {
   display: inline-block;
 } */
 
-/* b-button:hover {
+b-button:hover {
   border: 1px solid green;
   color: white;
-} */
+}
 
 .chatInput {
   width:  40vw;
