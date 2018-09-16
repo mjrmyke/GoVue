@@ -299,6 +299,7 @@ export default {
   border-right: 25px solid;
   border-image: repeating-linear-gradient(to bottom, #42b983, cornflowerblue) 25;
   width: 10vw;
+  min-width: 150px;
   z-index: 1;
 }
 
@@ -324,7 +325,7 @@ export default {
 }
 
 .dieInput {
-  width:25px;
+  width: 65px !important;
 }
 
 .time {
