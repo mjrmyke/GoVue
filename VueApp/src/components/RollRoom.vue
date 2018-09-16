@@ -3,8 +3,7 @@
   <div class="roomTitleContainer">
     <h2>{{ title }}</h2>
     <h3>Your status is: {{ status }} </h3>
-      Your name:<b-form-input class="nameInput" v-on:keyup="debounceInput" type="text" v-model="newName"/> <br/>
-      <!-- Your color:<b-form-input class="jscolor nameInput" value="" v-model="myColor"> -->
+     <span> Your name:<b-form-input class="nameInput" v-on:keyup="debounceInput" type="text" v-model="newName"/> <br/></span>
   </div>
 
     <div id="chatWrapper">
@@ -41,9 +40,14 @@
       <b-button @click="emitDiceRoll(6)">d6</b-button>
       <b-button @click="emitDiceRoll(4)">d4</b-button>
     </div>
+    
+  <b-input-group  v-on:keyup.enter="emitEvent" class='input-group'>
+    <b-form-input type="text" v-model="message"></b-form-input>
+    <b-input-group-append>
+      <b-btn  @click="emitEvent" variant="info">Send</b-btn>
+    </b-input-group-append>
+  </b-input-group>
 
-    <b-form-input type="text" class="chatInput" v-on:keyup.enter="emitEvent" v-model="message"/>
-    <b-button @click="emitEvent">Send</b-button>
   </div>
 </div>
 </template>
@@ -242,23 +246,22 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style lang="scss" scoped>
 #container {
   background-color: #42b983;
   width: 100%;
-  height: 80%;
+  height: calc(100% - 30px);
   display: flex; 
   flex-direction: column;
-  min-height: 80vh;
 }
 
 #chatWrapper {
   box-sizing: border-box;
   background-color: green;
-  height: 73vh;
   min-width: 100vw;
   display: flex;
   flex-direction: row;
+  flex: 1 0 calc(100% - 270px);
 }
 
 #chatContainer {  
@@ -286,6 +289,7 @@ export default {
 #chatInputContainer {
   padding: 1vh;
   width: 100%;
+  flex: 1 0 100px;
   background-color:cornflowerblue;
 }
 
@@ -303,6 +307,12 @@ export default {
   padding: 1px;
   background-color: darkcyan;
   color: white;
+}
+
+.input-group {
+  padding-top: 10px;
+  width: 50%;
+  margin-left: 25%;
 }
 
 .nameInput {
@@ -327,27 +337,20 @@ export default {
 }
 
 .diceContainer input {
-  width: 3vw;
+  width: 50px;
   padding-left: 10px;
   padding-right: 10px;
-  height: 2vh;
 }
 
 input {
-  display:inline;
+  display: inline;
+  height: 30px;
 }
 
-/* b-button {
-  background-color: inherit;
-  border: 1px solid black;
-  width: auto;
-  padding-left: 10px;
-  padding-right: 10px;
-  height: 2vh;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-} */
+.btn {
+  height: 30px;
+  line-height: normal !important;
+}
 
 b-button:hover {
   border: 1px solid green;
@@ -361,6 +364,9 @@ b-button:hover {
 }
 
 .roomTitleContainer {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 150px;
   height: 16vh;
 }
 

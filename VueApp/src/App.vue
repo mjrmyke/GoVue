@@ -22,7 +22,13 @@ export default {
 </script>
 
 <style>
+html, body {
+  height: 100%;
+}
+
 #app {
+  display: flex;
+  flex-direction: column;
   margin: 0;
   height: 100%;
   width: 100%;
@@ -33,15 +39,9 @@ export default {
   color: #2c3e50;
 }
 
-body {
-  overflow: hidden;
-  min-height: 100vh;
-  min-width: 100vh;
-  margin: 0;
-}
-
 #header {
   display: flex;
+  height: 40px;
   justify-content: space-between;
   flex-direction: row;
   color: white;
@@ -53,6 +53,7 @@ body {
 
 #header a {
   color: white;
+  padding-left: 10px;
 }
 
 
