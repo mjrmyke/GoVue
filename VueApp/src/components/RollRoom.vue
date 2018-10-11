@@ -53,44 +53,50 @@
 </template>
 
 <script>
-import LO from 'lodash';
-import cookies from 'js-cookie';
+import LO from "lodash";
+import cookies from "js-cookie";
 // import jscolor from 'jscolor';
 /* eslint-disable */
 // window.jscolor = jscolor;
 
-
 export default {
-  name: 'RollRoom',
+  name: "RollRoom",
   data: function() {
     return {
-      message : '',
-      title: 'Roll Room',
-      roomid: '',
-      responses:[],
+      message: "",
+      title: "Roll Room",
+      roomid: "",
+      responses: [],
       id: this.id,
-      name: '',
-      status: 'connecting',
+      name: "",
+      status: "connecting",
       userList: [],
       numDieInput: 1,
       typeDieInput: 4,
       constantAdd: 0,
-      newName: '',
-      myColor: this.getRandomColor(),
-    }
+      newName: "",
+      myColor: this.getRandomColor()
+    };
   },
   created: function() {
-      this.pageInit()
-      this.connectionInit()
+    this.pageInit();
+    this.connectionInit();
   },
   watch: {
-      newName: LO.debounce(function () {
+    newName: LO.debounce(
+      function() {
         if (this.newName.length > 0) {
-          this.sendWSSystemMessage('Changed name to: ' + this.newName, this.newName);
+          this.sendWSSystemMessage(
+            "Changed name to: " + this.newName,
+            this.newName
+          );
           this.name = this.newName;
-          cookies.set('name', this.name);
-          }
-      }, 1000, {maxWait: 2000})
+          cookies.set("name", this.name);
+        }
+      },
+      1000,
+      { maxWait: 2000 }
+    )
   },
   methods: {
     emitEvent() {
@@ -98,16 +104,23 @@ export default {
         return;
       }
       this.sendWSMessage(this.message);
-      console.log('event emitted')
+      console.log("event emitted");
       this.message = "";
     },
     pageInit() {
-      var savedName = cookies.get('name');
-      this.roomid = window.location.hash.split('/')[window.location.hash.split('/').length-1];
+      var savedName = cookies.get("name");
+      this.roomid = window.location.hash.split("/")[
+        window.location.hash.split("/").length - 1
+      ];
       document.title = this.roomid;
-      this.ws = new WebSocket("ws://" + window.location.hostname +'/ws'+ window.location.hash.split('#').join(''))
-      this.windowLocation = window.location.hash.split('#');
-      this.id = Math.floor((Math.random() * 100) + 1);
+      this.ws = new WebSocket(
+        "ws://" +
+          window.location.hostname +
+          "/ws" +
+          window.location.hash.split("#").join("")
+      );
+      this.windowLocation = window.location.hash.split("#");
+      this.id = Math.floor(Math.random() * 100 + 1);
 
       if (savedName !== undefined) {
         this.name = savedName;
@@ -116,63 +129,62 @@ export default {
         this.name = "Guest" + this.id;
         this.newName = this.name;
       }
-
     },
     sendWSMessage(message) {
-      this.ws.send(JSON.stringify(
-        { 
-          from: this.name, 
+      this.ws.send(
+        JSON.stringify({
+          from: this.name,
           message: message,
-          system: '',
-          data: '',
-          room: '',
-          }
-        )
+          system: "",
+          data: "",
+          room: ""
+        })
       );
     },
     sendWSSystemMessage(input, data) {
-      this.ws.send(JSON.stringify(
-        { 
-          from: this.name, 
+      this.ws.send(
+        JSON.stringify({
+          from: this.name,
           system: input,
           room: this.roomid,
           data: data,
-          message: ''
-          }
-        )
+          message: ""
+        })
       );
     },
     emitDiceRoll(typeOfDice) {
       var tempMessage;
-      tempMessage = "is rolling a d" + typeOfDice + " which rolled: " + Math.floor((Math.random() * typeOfDice) + 1);
-      this.sendWSMessage(tempMessage);  
+      tempMessage =
+        "is rolling a d" +
+        typeOfDice +
+        " which rolled: " +
+        Math.floor(Math.random() * typeOfDice + 1);
+      this.sendWSMessage(tempMessage);
     },
     connectionInit() {
       this.ws.onopen = event => {
         console.log("Opened WS connection");
-        this.sendWSSystemMessage('connected');
+        this.sendWSSystemMessage("connected");
         this.status = "connected";
-      }
+      };
 
       this.ws.onclose = event => {
         this.status = "disconnected";
-      }
+      };
 
       this.ws.onmessage = event => {
-         var element = document.getElementById("chatContainer");
+        var element = document.getElementById("chatContainer");
         console.log("received message: " + event.data);
         this.x = JSON.parse(event.data);
 
         if (this.x.data > 0 || this.x.system.length > 0) {
           if (this.x.system === "connected") {
-            this.userList.push(this.x.from)
-            this.responses.push(
-              {
-                time: this.getCurrentTime(),
-                from: this.x.from,
-                system: "has connected",
-              }
-              )
+            this.userList.push(this.x.from);
+            this.responses.push({
+              time: this.getCurrentTime(),
+              from: this.x.from,
+              system: "has connected"
+            });
           }
 
           if (LO.includes(this.x.system, "Changed name to: ")) {
@@ -190,7 +202,10 @@ export default {
           }
         }
 
-        if (!LO.includes(this.userList, this.x.from) && this.x.system.length <= 0) {
+        if (
+          !LO.includes(this.userList, this.x.from) &&
+          this.x.system.length <= 0
+        ) {
           this.userList.push(this.x.from);
         }
 
@@ -200,35 +215,44 @@ export default {
 
         setTimeout(function() {
           element.scrollTop = element.scrollHeight;
-          }, 25);
-
-      }
+        }, 25);
+      };
     },
     getCurrentTime() {
       var tempdate = new Date();
       tempdate = tempdate.toTimeString();
-      return tempdate = tempdate.split(' ')[0];
+      return (tempdate = tempdate.split(" ")[0]);
     },
     customDie(numberOfDie, typeOfDie, constant) {
-      var dieRolls = []
+      var dieRolls = [];
       var total = 0;
       var tempMessage;
 
-      for (var i=0; i < numberOfDie; i++) {
-        var newRoll = Math.floor((Math.random() * typeOfDie) + 1);
+      for (var i = 0; i < numberOfDie; i++) {
+        var newRoll = Math.floor(Math.random() * typeOfDie + 1);
         dieRolls.push(newRoll);
       }
 
       total = LO.sum(dieRolls) + Number(constant);
-      
-      tempMessage = "rolled a " + total + " by rolling " + numberOfDie + "d" + typeOfDie 
-                    + " + " + constant + "  rolls: (" + dieRolls + ")";
+
+      tempMessage =
+        "rolled a " +
+        total +
+        " by rolling " +
+        numberOfDie +
+        "d" +
+        typeOfDie +
+        " + " +
+        constant +
+        "  rolls: (" +
+        dieRolls +
+        ")";
 
       this.sendWSMessage(tempMessage);
     },
     getRandomColor() {
-      var letters = '0123456789ABCDEF';
-      var color = '#';
+      var letters = "0123456789ABCDEF";
+      var color = "#";
       for (var i = 0; i < 6; i++) {
         color += letters[Math.floor(Math.random() * 16)];
       }
@@ -244,7 +268,7 @@ export default {
   background-color: #42b983;
   width: 100%;
   height: calc(100% - 30px);
-  display: flex; 
+  display: flex;
   flex-direction: column;
 }
 
@@ -257,7 +281,7 @@ export default {
   flex: 1 0 calc(100% - 270px);
 }
 
-#chatContainer {  
+#chatContainer {
   border-left: 25px solid;
   border-image: repeating-linear-gradient(to bottom, #42b983, cornflowerblue) 25;
   height: 100%;
@@ -268,8 +292,8 @@ export default {
 
 #chatContainer li {
   justify-content: space-between;
-  border-top:lightgrey 1px solid;
-  border-bottom:lightgrey 1px solid;
+  border-top: lightgrey 1px solid;
+  border-bottom: lightgrey 1px solid;
   background-color: lightcyan;
   padding-top: 2px;
   padding-bottom: 2px;
@@ -283,7 +307,7 @@ export default {
   padding: 1vh;
   width: 100%;
   flex: 1 0 100px;
-  background-color:cornflowerblue;
+  background-color: cornflowerblue;
 }
 
 #userList {
@@ -352,8 +376,8 @@ b-button:hover {
 }
 
 .chatInput {
-  width:  40vw;
-  margin-bottom: 10px;  
+  width: 40vw;
+  margin-bottom: 10px;
   margin-top: 5px;
 }
 
@@ -368,7 +392,8 @@ b-button:hover {
   color: blue;
 }
 
-h1, h2 {
+h1,
+h2 {
   font-weight: normal;
 }
 
@@ -385,5 +410,4 @@ li {
 a {
   color: #42b983;
 }
-
 </style>
