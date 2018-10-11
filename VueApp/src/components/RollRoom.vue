@@ -3,7 +3,7 @@
   <div class="roomTitleContainer">
     <h2>{{ title }}</h2>
     <h3>Your status is: {{ status }} </h3>
-     <span> Your name:<b-form-input class="nameInput" v-on:keyup="debounceInput" type="text" v-model="newName"/> <br/></span>
+     <span> Your name:<b-form-input class="nameInput" type="text" v-model="newName"/> <br/></span>
   </div>
 
     <div id="chatWrapper">
@@ -62,25 +62,37 @@ import cookies from 'js-cookie';
 
 export default {
   name: 'RollRoom',
-  data() {
+  data: function() {
     return {
-      title: 'Roll Room Test',
-      ws: null
-    };
+      message : '',
+      title: 'Roll Room',
+      roomid: '',
+      responses:[],
+      id: this.id,
+      name: '',
+      status: 'connecting',
+      userList: [],
+      numDieInput: 1,
+      typeDieInput: 4,
+      constantAdd: 0,
+      newName: '',
+      myColor: this.getRandomColor(),
+    }
   },
   created: function() {
       this.pageInit()
       this.connectionInit()
   },
-  methods: {
-    debounceInput: LO.debounce(function () {
+  watch: {
+      newName: LO.debounce(function () {
         if (this.newName.length > 0) {
           this.sendWSSystemMessage('Changed name to: ' + this.newName, this.newName);
           this.name = this.newName;
           cookies.set('name', this.name);
-
           }
-        }, 1000, {maxWait: 2000}),
+      }, 1000, {maxWait: 2000})
+  },
+  methods: {
     emitEvent() {
       if (this.message === "") {
         return;
@@ -184,9 +196,7 @@ export default {
 
         this.x.time = this.getCurrentTime();
 
-        if (this.x.data.length > 0 || this.x.message.length > 0){
-          this.responses.push(this.x);
-        }
+        this.responses.push(this.x);
 
         setTimeout(function() {
           element.scrollTop = element.scrollHeight;
@@ -223,23 +233,6 @@ export default {
         color += letters[Math.floor(Math.random() * 16)];
       }
       return color;
-    }
-  },
-  data: function() {
-    return {
-      message : '',
-      title: 'Roll Room',
-      roomid: '',
-      responses:[],
-      id: this.id,
-      name: '',
-      status: 'connecting',
-      userList: [],
-      numDieInput: 1,
-      typeDieInput: 4,
-      constantAdd: 0,
-      newName: '',
-      myColor: this.getRandomColor(),
     }
   }
 };
